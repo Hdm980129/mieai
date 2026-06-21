@@ -61,6 +61,12 @@ object MieAiConfig {
 
     var maxImageSizeKB: Int = 2048
 
+    /**
+     * 是否启用群消息格式化输出
+     * 开启后群聊消息会被格式化为: [群友名]-[QQ号]：[消息]
+     */
+    var enableMessageFormat: Boolean = false
+
     // ── 加载/保存 ──
 
     /**
@@ -90,6 +96,7 @@ object MieAiConfig {
             map["contextMessageCount"]?.toString()?.toIntOrNull()?.let { contextMessageCount = it }
             map["enableImageRecognition"]?.toString()?.toBooleanStrictOrNull()?.let { enableImageRecognition = it }
             map["maxImageSizeKB"]?.toString()?.toIntOrNull()?.let { maxImageSizeKB = it }
+            map["enableMessageFormat"]?.toString()?.toBooleanStrictOrNull()?.let { enableMessageFormat = it }
 
             // Map 类型
             @Suppress("UNCHECKED_CAST")
@@ -176,7 +183,10 @@ object MieAiConfig {
             append("# 是否启用图片识别\n")
             append("enableImageRecognition: $enableImageRecognition\n\n")
             append("# 图片识别最大图片大小 (KB)\n")
-            append("maxImageSizeKB: $maxImageSizeKB\n")
+            append("maxImageSizeKB: $maxImageSizeKB\n\n")
+            append("# 是否启用群消息格式化输出\n")
+            append("# 开启后群聊消息会被格式化为: [群友名]-[QQ号]：[消息]\n")
+            append("enableMessageFormat: $enableMessageFormat\n")
         }
         file.writeText(content)
     }

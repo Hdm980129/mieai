@@ -18,6 +18,7 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import com.mieai.config.MieAiConfig
 import com.mieai.service.ChatGptService
 import com.mieai.command.MieAiCommand
+import com.mieai.format.MessageFormatter
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.Base64
@@ -28,7 +29,7 @@ object MieAiPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "com.mieai.mieai",
         name = "mieai",
-        version = "1.0.2"
+        version = "1.0.4"
     ) {
         author("超级龙虾")
         info("ChatGPT 群聊机器人插件")
@@ -182,6 +183,12 @@ object MieAiPlugin : KotlinPlugin(
             .trim()
 
         if (content.isBlank()) return
+
+        // 格式化输出（根据配置开关）
+        if (MieAiConfig.enableMessageFormat) {
+            val formatted = MessageFormatter.formatGroupMessage(senderName, event.sender.id, content)
+            logger.info(formatted)
+        }
 
         val history = recentMessages.getOrPut(groupId) { CopyOnWriteArrayList() }
         history.add(senderName to content)
