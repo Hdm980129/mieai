@@ -42,8 +42,8 @@ object MieAiPlugin : KotlinPlugin(
     lateinit var adminPermission: Permission
         private set
 
-    // 每个群最近消息的缓存: groupId -> List<Pair<senderName, messageContent>>
-    private val recentMessages = ConcurrentHashMap<Long, CopyOnWriteArrayList<Pair<String, String>>>()
+    // 每个群最近消息的缓存: groupId -> List<Triple<senderName, senderId, messageContent>>
+    private val recentMessages = ConcurrentHashMap<Long, CopyOnWriteArrayList<Triple<String, Long, String>>>()
 
     // 图片下载用的共享 HttpClient（不再每次新建，避免连接池/线程池泄漏）
     private val imageHttpClient by lazy {
@@ -185,7 +185,7 @@ object MieAiPlugin : KotlinPlugin(
         if (content.isBlank()) return
 
         val history = recentMessages.getOrPut(groupId) { CopyOnWriteArrayList() }
-        history.add(senderName to content)
+        history.add(Triple(senderName, event.sender.id, content))
         // 保留最近 50 条消息作为缓存池
         while (history.size > 50) {
             history.removeAt(0)
@@ -205,8 +205,13 @@ object MieAiPlugin : KotlinPlugin(
 
         return buildString {
             append("【以下是最新的 ${contextMsgs.size} 条群聊消息，供你参考上下文】\n")
-            contextMsgs.forEach { (name, msg) ->
-                append("$name: $msg\n")
+            contextMsgs.forEach { (name, qqId, msg) ->
+                if (MieAiConfig.enableMessageFormat) {
+                    append(MessageFormatter.formatGroupMessage(name, qqId, msg))
+                } else {
+                    append("$name: $msg")
+                }
+                append("\n")
             }
             append("【以上是群聊历史消息，以下是当前消息】")
         }
