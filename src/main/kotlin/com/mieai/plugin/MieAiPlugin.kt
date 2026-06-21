@@ -29,7 +29,7 @@ object MieAiPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "com.mieai.mieai",
         name = "mieai",
-        version = "1.0.5"
+        version = "1.0.6"
     ) {
         author("超级龙虾")
         info("ChatGPT 群聊机器人插件")
