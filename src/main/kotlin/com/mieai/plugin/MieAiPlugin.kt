@@ -184,12 +184,6 @@ object MieAiPlugin : KotlinPlugin(
 
         if (content.isBlank()) return
 
-        // 格式化输出（根据配置开关）
-        if (MieAiConfig.enableMessageFormat) {
-            val formatted = MessageFormatter.formatGroupMessage(senderName, event.sender.id, content)
-            logger.debug(formatted)
-        }
-
         val history = recentMessages.getOrPut(groupId) { CopyOnWriteArrayList() }
         history.add(senderName to content)
         // 保留最近 50 条消息作为缓存池
@@ -249,12 +243,19 @@ object MieAiPlugin : KotlinPlugin(
             .replace("[mirai:at:${event.bot.id} ]", "")
             .trim()
 
+        // 如果 enableMessageFormat，给 cleanMessage 加上群友标识
+        val taggedMessage = if (MieAiConfig.enableMessageFormat) {
+            MessageFormatter.formatGroupMessage(event.senderName, sender.id, cleanMessage)
+        } else {
+            cleanMessage
+        }
+
         // 如果是概率触发且启用了上下文消息，把前几条消息拼接进去
         val contextPrefix = if (!isExplicitTrigger) getRecentContextMessages(groupId) else null
         val finalMessage = if (contextPrefix != null) {
-            "$contextPrefix\n\n当前消息: $cleanMessage"
+            "$contextPrefix\n\n当前消息: $taggedMessage"
         } else {
-            cleanMessage
+            taggedMessage
         }
 
         // 获取系统提示词

@@ -62,8 +62,8 @@ object MieAiConfig {
     var maxImageSizeKB: Int = 2048
 
     /**
-     * 是否启用群消息格式化输出
-     * 开启后群聊消息会被格式化为: [群友名]-[QQ号]：[消息]
+     * 是否在发给 OpenAI 的消息中添加群友标识
+     * 开启后发送给 AI 的消息格式为: [群友名]-[QQ号]：[消息]
      */
     var enableMessageFormat: Boolean = false
 
