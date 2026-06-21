@@ -107,6 +107,11 @@ object MieAiConfig {
             map["enableMessageFormat"]?.toString()?.toBooleanStrictOrNull()?.let { enableMessageFormat = it }
             map["messageFormatTemplate"]?.toString()?.let { messageFormatTemplate = it }
 
+            // 如果配置文件中没有新配置项，自动写回补全
+            if (!map.containsKey("enableMessageFormat") || !map.containsKey("messageFormatTemplate")) {
+                save()
+            }
+
             // Map 类型
             @Suppress("UNCHECKED_CAST")
             (map["groupProbabilities"] as? Map<String, Any?>)?.let { m ->
